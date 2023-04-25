@@ -78,6 +78,7 @@
         <div class="col-12 card">
             <div class="card-body">
                 <section id="processes" class="center">
+                    <a class="btn btn-info" href="http://localhost:5262/Token/Download">Export to excel</a>
                     <table class="table">
                         <thead>
                         <tr>
@@ -95,7 +96,7 @@
                         </tbody>
                     </table>
 
-                    
+
                     <nav aria-label="TablePaginate">
                         <ul id="paginateId" class="pagination">
                             <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -103,6 +104,7 @@
                             <li class="page-item"><a class="page-link" href="#">3</a></li>
                         </ul>
                     </nav>
+
 
                 </section>
             </div>
@@ -395,6 +397,27 @@
                 resetTokenForm();
                 getTokenList(1);
                 $("#editModal").modal('hide');
+                alert("Details saved successfully!!!");
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+
+    function exportData() {
+
+
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:5262/Token/Download",
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                //resetTokenForm();
+                //getTokenList(1);
+                //$("#editModal").modal('hide');
                 alert("Details saved successfully!!!");
 
             },
