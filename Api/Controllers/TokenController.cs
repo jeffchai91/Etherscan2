@@ -18,7 +18,7 @@ namespace Api.Controllers
         private IConfiguration _configuration;
         private readonly TokenService _tokenService;
         private readonly string _connection;
-        private static int _pageSize = 100;
+        private static int _pageSize = 10;
 
         public TokenController(ILogger<TokenController> logger, IConfiguration configuration, TokenService tokenService)
         {
@@ -32,6 +32,13 @@ namespace Api.Controllers
         public async Task<IEnumerable<TokenModel>> GetList(int pageNo)
         {
             return await _tokenService.GetList(pageNo, _pageSize, _connection);
+        }
+
+        [HttpGet]
+        [Route("GetPaginateList")]
+        public async Task<PaginateModal<List<TokenModel>>> GetPaginateList(int pageNo)
+        {
+            return await _tokenService.GetPaginateList(pageNo, _pageSize, _connection);
         }
 
         [HttpGet]

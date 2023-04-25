@@ -80,6 +80,52 @@ namespace Etherscan.DAL.Services.DataServices
             }
         }
 
+        public async Task<PaginateModal<List<TokenModel>>> GetPaginateList(int pageNo, int pageSize, string connString)
+        {
+            using var conn = new MySqlConnection(connString);
+            try
+            {
+                conn.Open();
+                var query = $@"
+                    SELECT 
+                    id, 
+                    symbol, 
+                    name, 
+                    total_supply as totalSupply, 
+                    contract_address as contractAddress, 
+                    total_holders  as totalHolders, 
+                    price,
+                    total_supply / (select SUM(total_supply) from token) * 100 as totalSupplyPercentage
+                    FROM token 
+
+                    LIMIT {pageSize * (pageNo - 1)}, {pageSize}
+                            ";
+                var data= conn.Query<TokenModel>(query).ToList();
+                var totalItem = conn.QuerySingle<long>("SELECT COUNT(1) FROM token");
+                var totalPage = (long)Math.Ceiling( (decimal)totalItem / pageSize);
+
+                var rtn = new PaginateModal<List<TokenModel>>
+                {
+                    Data = data,
+                    TotalPage = totalPage,
+                    TotalItem = totalItem,
+                    PageNo = pageNo,
+                    PageSize = pageSize
+                };
+
+                return rtn;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogCritical(exception, "FATAL ERROR: Database connections could not be opened: {Message}", exception.Message);
+                throw;
+            }
+            finally
+            {
+                await conn.CloseAsync();
+            }
+        }
+
         public async Task<List<TokenModel>> GetAllList(string connString)
         {
             using var conn = new MySqlConnection(connString);
