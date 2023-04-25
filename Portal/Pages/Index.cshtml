@@ -1,0 +1,412 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+
+<div>
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">Save / Update Token</div>
+                <form class="card-body" id="tokenForm">
+                    <div class="row mb-2">
+                        <label for="inputName" class="col-sm-3 col-form-label">Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputName">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <label for="inputSymbol" class="col-sm-3 col-form-label">Symbol</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputSymbol">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <label for="inputContractAddress" class="col-sm-3 col-form-label">Contract Address</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputContractAddress">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <label for="inputTotalSupply" class="col-sm-3 col-form-label">TotalSupply</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputTotalSupply">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <label for="inputTotalHolders" class="col-sm-3 col-form-label">Total Holders</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputTotalHolders">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button id="btnResetTokenForm" type="button" class="btn btn-warning">Reset</button>
+                </form>
+            </div>
+
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">Token Statistics by Token Supply</div>
+                <div class="card-body" style="height: 300px">
+                    <div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;">
+                        <div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+                            <div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>
+                        </div>
+                        <div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+                            <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
+                        </div>
+                    </div> <canvas id="chart-line" width="299" height="130" class="chartjs-render-monitor" style="display: block; width: 299px; height: 130px;"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 card">
+            <div class="card-body">
+                <section id="processes" class="center">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Symbol</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Contract Address</th>
+                            <th scope="col">Total Holders</th>
+                            <th scope="col">Total Supply</th>
+                            <th scope="col">Total Supply %</th>
+                            <th scope="col">Handle</th>
+                        </tr>
+                        </thead>
+                        <tbody id="dataTbBody">
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </section>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Modal</h5>
+                <button type="button" class="close modalCloseBtn" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="card-body" id="tokenEditForm">
+                    <div class="row mb-2">
+                        <label for="inputName" class="col-sm-3 col-form-label">Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputEditName">
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <label for="inputSymbol" class="col-sm-3 col-form-label">Symbol</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputEditSymbol">
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <label for="inputContractAddress" class="col-sm-3 col-form-label">Contract Address</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputEditContractAddress">
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <label for="inputTotalSupply" class="col-sm-3 col-form-label">TotalSupply</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputEditTotalSupply">
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <label for="inputTotalHolders" class="col-sm-3 col-form-label">Total Holders</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputEditTotalHolders">
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="inputEditId">
+      
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modalCloseBtn" data-dismiss="modal">Close</button>
+                <button id="formEditSubmit" type="button" onclick="submitEditForm()" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#tokenForm").submit(function (e) {
+        // prevent submit
+        e.preventDefault();
+
+        // validate 
+
+
+        // ...
+
+        let data = {
+            "symbol": $("#inputSymbol").val(),
+            "name": $("#inputName").val(),
+            "totalSupply": $("#inputTotalSupply").val(),
+            "contractAddress": $("#inputContractAddress").val(),
+            "totalHolders": $("#inputTotalHolders").val(),
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:5262/Token",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                resetTokenForm();
+                getTokenList(1);
+                alert("Details saved successfully!!!");
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    });
+
+    $("#btnResetTokenForm").click(function () {
+        resetTokenForm();
+    });
+
+    $( document ).ready(function() {
+        getTokenList(1);
+
+        // Close modal on button click
+        $(".modalCloseBtn").click(function () {
+            $("#editModal").modal('hide');
+        });
+    });
+
+    function getTokenList(pageNo)
+    {
+        $.ajax({
+            type: "Get",
+            url: "http://localhost:5262/Token?pageNo=" + pageNo,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                console.log(response);
+                $("#dataTbBody").empty();
+                $("#chart-line").empty();
+                for (let i = 0; i < response.length; i++) {
+                    var newRowContent = `<tr><th scope="row">` + (i + 1) + "</th>" +
+                        `<td><a href="#" onclick="displayDetail(${response[i].id});return false;">${response[i].symbol}</a></td>` +
+                        "<td>" + response[i].name + "</td>" +
+                        "<td>" + response[i].contractAddress + "</td>" +
+                        "<td>" + response[i].totalHolders + "</td>" +
+                        "<td>" + response[i].totalSupply + "</td>" +
+                        "<td>" + response[i].totalSupplyPercentage + "</td>" +
+                        `<td><button type="button" class="btn btn-secondary" onclick="editTBody(${response[i].id})">Edit</button></td>`;
+
+                    $("#dataTbBody").append(newRowContent);
+                }
+
+                var ctx = $("#chart-line");
+                var myLineChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            response[0].symbol, 
+                            response[1].symbol, 
+                            response[2].symbol, 
+                            response[3].symbol, 
+                            response[4].symbol, 
+                            response[5].symbol, 
+                            response[6].symbol, 
+                            response[7].symbol, 
+                            response[8].symbol,
+                            response[9].symbol
+                        ],
+                        datasets: [{
+                            data: [
+                                response[0].totalSupply, 
+                                response[1].totalSupply, 
+                                response[2].totalSupply, 
+                                response[3].totalSupply, 
+                                response[4].totalSupply, 
+                                response[5].totalSupply, 
+                                response[6].totalSupply, 
+                                response[7].totalSupply, 
+                                response[8].totalSupply,
+                                response[9].totalSupply
+                            ],
+                            backgroundColor: ["" +
+                                "rgba(255, 0, 0, 0.5)", 
+                                "rgba(100, 255, 0, 0.5)", 
+                                "rgba(110, 10, 255, 0.5)", 
+                                "rgba(120, 20, 255, 0.5)", 
+                                "rgba(130, 30, 255, 0.5)", 
+                                "rgba(140, 40, 255, 0.5)", 
+                                "rgba(150, 50, 255, 0.5)", 
+                                "rgba(160, 60, 255, 0.5)", 
+                                "rgba(170, 70, 255, 0.5)", 
+                                "rgba(0, 100, 255, 0.5)"]
+                        }]
+                    }
+                });
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+
+    function resetTokenForm() {
+        return $('#tokenForm').trigger("reset");
+    }
+
+    function editTBody(id) {
+        $('#editModal').modal('toggle');
+        $.ajax({
+            type: "Get",
+            url: "http://localhost:5262/Token/GetTokenById?id=" + id,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                console.log(response);
+                $('#inputEditName').val(response.name);
+                $('#inputEditSymbol').val(response.symbol);
+                $('#inputEditContractAddress').val(response.contractAddress);
+                $('#inputEditTotalSupply').val(response.totalSupply);
+                $('#inputEditTotalHolders').val(response.totalHolders);
+                $('#inputEditId').val(response.id);
+
+                $("#inputEditName").prop('disabled', false);
+                $("#inputEditSymbol").prop('disabled', false);
+                $("#inputEditContractAddress").prop('disabled', false);
+                $("#inputEditTotalSupply").prop('disabled', false);
+                $("#inputEditTotalHolders").prop('disabled', false);
+                $('#formEditSubmit').show();
+                $('#editModalLabel').text("Edit Token");
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+        //http://localhost:5262/Token/GetTokenById?id=1
+    }
+
+    function displayDetail(id) {
+        $('#editModal').modal('toggle');
+        $.ajax({
+            type: "Get",
+            url: "http://localhost:5262/Token/GetTokenById?id=" + id,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                console.log(response);
+                $('#inputEditName').val(response.name);
+                $('#inputEditSymbol').val(response.symbol);
+                $('#inputEditContractAddress').val(response.contractAddress);
+                $('#inputEditTotalSupply').val(response.totalSupply);
+                $('#inputEditTotalHolders').val(response.totalHolders);
+                $('#inputEditId').val(response.id);
+
+                $("#inputEditName").prop('disabled', true);
+                $("#inputEditSymbol").prop('disabled', true);
+                $("#inputEditContractAddress").prop('disabled', true);
+                $("#inputEditTotalSupply").prop('disabled', true);
+                $("#inputEditTotalHolders").prop('disabled', true);
+                $('#formEditSubmit').hide();
+                $('#editModalLabel').text("Detail Token");
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+
+    function submitEditForm() {
+        let data = {
+            "id": $("#inputEditId").val(),
+            "symbol": $("#inputEditSymbol").val(),
+            "name": $("#inputEditName").val(),
+            "totalSupply": $("#inputEditTotalSupply").val(),
+            "contractAddress": $("#inputEditContractAddress").val(),
+            "totalHolders": $("#inputEditTotalHolders").val()
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:5262/Token/UpdateToken",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                resetTokenForm();
+                getTokenList(1);
+                $("#editModal").modal('hide');
+                alert("Details saved successfully!!!");
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+</script>
