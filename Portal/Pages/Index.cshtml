@@ -180,6 +180,13 @@
                         </div>
                     </div>
                     
+                    <div class="row mb-2" id="editPriceRow">
+                        <label for="inputTotalHolders" class="col-sm-3 col-form-label">Price</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputEditPrice">
+                        </div>
+                    </div>
+                    
                     <input type="hidden" id="inputEditId">
       
                 </form>
@@ -340,7 +347,9 @@
                 $("#inputEditTotalSupply").prop('disabled', false);
                 $("#inputEditTotalHolders").prop('disabled', false);
                 $('#formEditSubmit').show();
+                $('#editPriceRow').hide();
                 $('#editModalLabel').text("Edit Token");
+ 
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status);
@@ -364,14 +373,18 @@
                 $('#inputEditTotalSupply').val(response.totalSupply);
                 $('#inputEditTotalHolders').val(response.totalHolders);
                 $('#inputEditId').val(response.id);
+                $('#inputEditPrice').val(response.price);
 
                 $("#inputEditName").prop('disabled', true);
                 $("#inputEditSymbol").prop('disabled', true);
                 $("#inputEditContractAddress").prop('disabled', true);
                 $("#inputEditTotalSupply").prop('disabled', true);
                 $("#inputEditTotalHolders").prop('disabled', true);
+                $("#inputEditPrice").prop('disabled', true);
                 $('#formEditSubmit').hide();
+                $('#editPriceRow').show();
                 $('#editModalLabel').text("Detail Token");
+
 
             },
             error: function (xhr, ajaxOptions, thrownError) {

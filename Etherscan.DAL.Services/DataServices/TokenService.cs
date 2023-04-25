@@ -80,6 +80,37 @@ namespace Etherscan.DAL.Services.DataServices
             }
         }
 
+        public async Task<List<TokenModel>> GetAllList(string connString)
+        {
+            using var conn = new MySqlConnection(connString);
+            try
+            {
+                conn.Open();
+                var query = $@"
+                    SELECT 
+                    id, 
+                    symbol, 
+                    name, 
+                    total_supply as totalSupply, 
+                    contract_address as contractAddress, 
+                    total_holders  as totalHolders, 
+                    price,
+                    total_supply / (select SUM(total_supply) from token) * 100 as totalSupplyPercentage
+                    FROM token 
+                            ";
+                return conn.Query<TokenModel>(query).ToList();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogCritical(exception, "FATAL ERROR: Database connections could not be opened: {Message}", exception.Message);
+                throw;
+            }
+            finally
+            {
+                await conn.CloseAsync();
+            }
+        }
+
         public async Task<TokenModel> GetTokenById(int id, string connString)
         {
             using var conn = new MySqlConnection(connString);
@@ -128,6 +159,33 @@ namespace Etherscan.DAL.Services.DataServices
                 m.Parameters.AddWithValue("@contractAddress", entity.ContractAddress);
                 m.Parameters.AddWithValue("@totalHolders", entity.TotalHolders);
                 m.Parameters.AddWithValue("@price", entity.Price);
+
+                return await m.ExecuteNonQueryAsync();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogCritical(exception, "FATAL ERROR: Database connections could not be opened: {Message}", exception.Message);
+                throw;
+            }
+            finally
+            {
+                await conn.CloseAsync();
+            }
+        }
+
+        public async Task<int> UpdatePrice(int id, decimal price, string connString)
+        {
+            using var conn = new MySqlConnection(connString);
+            try
+            {
+                conn.Open();
+                var query = $@"
+                    UPDATE etherscan.token
+                    SET price=@price
+                    WHERE id={id};";
+                MySqlCommand m = new MySqlCommand(query);
+                m.Connection = conn;
+                m.Parameters.AddWithValue("@price", price);
 
                 return await m.ExecuteNonQueryAsync();
             }
