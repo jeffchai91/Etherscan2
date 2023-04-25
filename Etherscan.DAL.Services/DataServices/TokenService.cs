@@ -2,6 +2,7 @@
 using Etherscan.DAL.Entities.Data;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using System.Data;
 using static Dapper.SqlMapper;
 
 namespace Etherscan.DAL.Services.DataServices
@@ -47,7 +48,7 @@ namespace Etherscan.DAL.Services.DataServices
             }
         }
 
-        public async Task<List<TokenModel>> GetList(int pageNo, int pageSize, string connString)
+        public async Task<List<TokenModel>> GetList(string connString)
         {
             using var conn = new MySqlConnection(connString);
             try
@@ -64,8 +65,6 @@ namespace Etherscan.DAL.Services.DataServices
                     price,
                     total_supply / (select SUM(total_supply) from token) * 100 as totalSupplyPercentage
                     FROM token 
-
-                    LIMIT {pageSize * (pageNo - 1)}, {pageSize}
                             ";
                 return  conn.Query<TokenModel>(query).ToList();
             }
@@ -78,6 +77,30 @@ namespace Etherscan.DAL.Services.DataServices
             {
                 await conn.CloseAsync();
             }
+        }
+
+        public async Task<DataTable> GetDataTableList(string connString)
+        {
+            var tokenList = await GetList(connString);
+
+            // this method creates a data table
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add("Id", typeof(string));
+            dt.Columns.Add("Symbol", typeof(string));
+            dt.Columns.Add("Name", typeof(string));
+            dt.Columns.Add("Total Supply", typeof(string));
+            dt.Columns.Add("Contract Address", typeof(string));
+            dt.Columns.Add("Total Holders", typeof(string));
+            dt.Columns.Add("Price", typeof(string));
+            dt.Columns.Add("Total Supply %", typeof(string));
+
+            foreach (var token in tokenList)
+            {
+                dt.Rows.Add(token.Id, token.Symbol, token.Name, token.TotalSupply, token.ContractAddress, token.TotalHolders, token.Price, token.TotalSupplyPercentage);
+            }
+
+            return dt;
         }
 
         public async Task<PaginateModal<List<TokenModel>>> GetPaginateList(int pageNo, int pageSize, string connString)

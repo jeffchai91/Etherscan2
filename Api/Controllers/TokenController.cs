@@ -2,6 +2,10 @@ using Etherscan.DAL.Entities;
 using Etherscan.DAL.Entities.Data;
 using Etherscan.DAL.Services.DataServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Net.Http.Headers;
+using Api.Extensions;
+using Microsoft.Net.Http.Headers;
 
 namespace Api.Controllers
 {
@@ -28,11 +32,6 @@ namespace Api.Controllers
             _connection = _configuration.GetValue<string>("ConnectionString");
         }
 
-        [HttpGet(Name = "GetList")]
-        public async Task<IEnumerable<TokenModel>> GetList(int pageNo)
-        {
-            return await _tokenService.GetList(pageNo, _pageSize, _connection);
-        }
 
         [HttpGet]
         [Route("GetPaginateList")]
@@ -81,6 +80,19 @@ namespace Api.Controllers
             return true;
         }
 
+
+        [HttpGet]
+        [Route("Download")]
+        public async Task<IActionResult> Download()
+        {
+            var dt = await _tokenService.GetDataTableList(_connection);
+            var tokenListByte = (await _tokenService.GetDataTableList(_connection)).ToCsvByteArray();
+            return new FileContentResult(tokenListByte, "application/octet-stream")
+            {
+                FileDownloadName = "TokenList.csv"
+            };
+
+        }
 
     }
 }
